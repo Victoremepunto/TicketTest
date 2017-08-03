@@ -20,25 +20,29 @@ namespace TicketTest
 
             if (args.Length < 2)
             {
-                Console.WriteLine("Please supply option and server e.g. TicketTest.exe R localhost [user] [userdirectory]");
+                Console.WriteLine("Please supply option and server e.g. TicketTest.exe R localhost [user] [userdirectory] [friendlyName] [certLocation='user']");
                 Console.WriteLine("Options:");
                 Console.WriteLine("R Request Ticket");
             } else if (args[0].Equals("R")) {
                 string option = args[0];
                 string server = args[1];
-                string userid, udc;
-                if (args.Length == 4)
+                string userid, udc, friendlyName, certLocation;
+                if (args.Length == 6)
                 {
                     userid = args[2];
                     udc = args[3];
+                    friendlyName = args[4];
+                    certLocation = args[5];
                 } else {
                     userid = "TestUserId";
                     udc = "TestUDC";
+                    friendlyName = "QlikClient";
+                    certLocation = "user";
                 }
 
                 Program TicketObj=new Program();
                 //Load Certificates
-                TicketObj.TicketExampleCertificate();
+                TicketObj.TicketExampleCertificate(friendlyName, certLocation);
                 //Request ticket
                 string Ticket=TicketObj.TicketRequest("POST", server, userid, udc);
 
@@ -56,16 +60,24 @@ namespace TicketTest
             
         }
 
-        public void TicketExampleCertificate()
+        public void TicketExampleCertificate(String friendlyName, String certLocation)
         {
             Console.WriteLine("Loading certificate to use for ticket request");
             Console.WriteLine("***********************************************************************");
-            // First locate the Qlik Sense certificate
-            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+
+            X509Store store;
+
+            if (certLocation.Equals("user"))
+            {
+                store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            } else {
+                store = new X509Store(StoreName.My, StoreLocation.LocalMachine);
+            }
+
             try
             {
                 store.Open(OpenFlags.ReadOnly);
-                certificate_ = store.Certificates.Cast<X509Certificate2>().FirstOrDefault(c => c.FriendlyName == "QlikClient");
+                certificate_ = store.Certificates.Cast<X509Certificate2>().FirstOrDefault(c => c.FriendlyName == friendlyName);
             }
             catch (Exception ex)
             {

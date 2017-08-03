@@ -6,7 +6,7 @@ Diagnostic tool to test Qlik Sense Proxy authentication API for tickets. The too
 ## Installation:
 
 If running on the same host as proxy no need for installation just run the tool with the following syntax
-TicketTest.exe R localhost [user] [userdirectory]
+TicketTest.exe R localhost [user] [userdirectory] [friendlyName] [certLocation='user']
 
 If run from a remote machine you will need to export the client certificate from the proxy and import them to the host:
 1. Go to QMC and export certificate for host that you intend to test requesting a ticket from. Select to include the private key and use a password.
@@ -16,7 +16,7 @@ If run from a remote machine you will need to export the client certificate from
 
 ## Example
 ```
-TicketTest.exe R localhost test testdir
+TicketTest.exe R localhost test testdir QlikClient localMachine
 
 Loading certificate to use for ticket request
 ***********************************************************************
