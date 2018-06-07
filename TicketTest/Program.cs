@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 
 namespace TicketTest
 {
@@ -23,6 +21,7 @@ namespace TicketTest
                 Console.WriteLine("Please supply option and server e.g. TicketTest.exe R localhost [user] [userdirectory] [friendlyName] [certLocation='user']");
                 Console.WriteLine("Options:");
                 Console.WriteLine("R Request Ticket");
+
             } else if (args[0].Equals("R")) {
                 string option = args[0];
                 string server = args[1];
@@ -102,11 +101,12 @@ namespace TicketTest
 
             //Create URL to REST endpoint for tickets
             string url = "https://" + server + ":4243/qps/ticket";
-
-
-
             //Create the HTTP Request and add required headers and content in Xrfkey
             string Xrfkey = "0123456789abcdef";
+            
+            // Force TLS 1.2 
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url + "?Xrfkey=" + Xrfkey);
             // Add the method to authentication the user
             request.ClientCertificates.Add(certificate_);
@@ -146,6 +146,7 @@ namespace TicketTest
             }
 
             // make the web request and return the content
+
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
